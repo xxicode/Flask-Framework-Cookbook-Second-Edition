@@ -47,15 +47,16 @@ class CustomCategoryInput(Select):
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
-        html = []
-        for val, label, selected in field.iter_choices():
-            html.append(
-                '<input type="radio" %s> %s' % (
-                    html_params(
-                        name=field.name, value=val, checked=selected, **kwargs
-                    ), label
-                )
+        html = [
+            '<input type="radio" %s> %s'
+            % (
+                html_params(
+                    name=field.name, value=val, checked=selected, **kwargs
+                ),
+                label,
             )
+            for val, label, selected in field.iter_choices()
+        ]
         return HTMLString(' '.join(html))
 
 
@@ -88,17 +89,12 @@ class ProductForm(NameForm):
 def check_duplicate_category(case_sensitive=True):
     def _check_duplicate(form, field):
         if case_sensitive:
-            res = Category.query.filter(
-                Category.name.like('%' + field.data + '%')
-            ).first()
+            res = Category.query.filter(Category.name.like(f'%{field.data}%')).first()
         else:
-            res = Category.query.filter(
-                Category.name.ilike('%' + field.data + '%')
-            ).first()
+            res = Category.query.filter(Category.name.ilike(f'%{field.data}%')).first()
         if res:
-            raise ValidationError(
-                'Category named %s already exists' % field.data
-            )
+            raise ValidationError(f'Category named {field.data} already exists')
+
     return _check_duplicate
 
 

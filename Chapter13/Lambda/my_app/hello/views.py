@@ -12,10 +12,10 @@ def hello_world():
 
 @hello.route('/show/<key>')
 def get_message(key):
-    return MESSAGES.get(key) or "%s not found!" % key
+    return MESSAGES.get(key) or f"{key} not found!"
 
 
 @hello.route('/add/<key>/<message>')
 def add_or_update_message(key, message):
     MESSAGES[key] = message
-    return "%s Added/Updated" % key
+    return f"{key} Added/Updated"

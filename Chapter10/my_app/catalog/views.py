@@ -141,14 +141,14 @@ def product_search(page=1):
     category = request.args.get('category')
     products = Product.query
     if name:
-        products = products.filter(Product.name.like('%' + name + '%'))
+        products = products.filter(Product.name.like(f'%{name}%'))
     if price:
         products = products.filter(Product.price == price)
     if company:
-        products = products.filter(Product.company.like('%' + company + '%'))
+        products = products.filter(Product.company.like(f'%{company}%'))
     if category:
         products = products.select_from(join(Product, Category)).filter(
-            Category.name.like('%' + category + '%')
+            Category.name.like(f'%{category}%')
         )
     return render_template(
         'products.html', products=products.paginate(page, 10)

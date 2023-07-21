@@ -14,18 +14,19 @@ def home():
 @catalog.route('/product/<key>')
 def product(key):
     product = Product.objects.get_or_404(key=key)
-    return 'Product - %s, $%s' % (product.name, product.price)
+    return f'Product - {product.name}, ${product.price}'
 
 
 @catalog.route('/products')
 def products():
     products = Product.objects.all()
-    res = {}
-    for product in products:
-        res[product.key] = {
+    res = {
+        product.key: {
             'name': product.name,
             'price': str(product.price),
         }
+        for product in products
+    }
     return jsonify(res)
 
 

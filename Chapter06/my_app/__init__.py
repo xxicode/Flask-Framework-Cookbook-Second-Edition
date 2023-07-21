@@ -25,8 +25,7 @@ login_manager.login_view = 'auth.login'
 
 
 def get_ldap_connection():
-	conn = ldap.initialize(app.config['LDAP_PROVIDER_URL'])
-	return conn
+	return ldap.initialize(app.config['LDAP_PROVIDER_URL'])
 
 
 from my_app.auth.views import auth, facebook_blueprint, google_blueprint, twitter_blueprint

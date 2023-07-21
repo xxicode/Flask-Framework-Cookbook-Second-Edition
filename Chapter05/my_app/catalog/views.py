@@ -76,7 +76,7 @@ def create_product():
         product = Product(name, price, category, filename)
         db.session.add(product)
         db.session.commit()
-        flash('The product %s has been created' % name, 'success')
+        flash(f'The product {name} has been created', 'success')
         return redirect(url_for('catalog.product', id=product.id))
 
     if form.errors:
@@ -94,14 +94,14 @@ def product_search(page=1):
     category = request.args.get('category')
     products = Product.query
     if name:
-        products = products.filter(Product.name.like('%' + name + '%'))
+        products = products.filter(Product.name.like(f'%{name}%'))
     if price:
         products = products.filter(Product.price == price)
     if company:
-        products = products.filter(Product.company.like('%' + company + '%'))
+        products = products.filter(Product.company.like(f'%{company}%'))
     if category:
         products = products.select_from(join(Product, Category)).filter(
-            Category.name.like('%' + category + '%')
+            Category.name.like(f'%{category}%')
         )
     return render_template(
         'products.html', products=products.paginate(page, 10)
@@ -117,9 +117,7 @@ def create_category():
         category = Category(name)
         db.session.add(category)
         db.session.commit()
-        flash(
-            'The category %s has been created' % name, 'success'
-        )
+        flash(f'The category {name} has been created', 'success')
         return redirect(
             url_for('catalog.category', id=category.id)
         )

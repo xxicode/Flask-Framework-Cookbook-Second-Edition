@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel
 
 
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 ALLOWED_LANGUAGES = {
     'en': 'English',
