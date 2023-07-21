@@ -35,10 +35,7 @@ def ldap_login():
         password = request.form.get('password')
         try:
             conn = get_ldap_connection()
-            conn.simple_bind_s(
-                'cn=%s,dc=example,dc=org' % username,
-                password
-            )
+            conn.simple_bind_s(f'cn={username},dc=example,dc=org', password)
         except ldap.INVALID_CREDENTIALS:
             flash('Invalid username or password. Please try again.', 'danger')
             return render_template('login.html', form=form)
@@ -74,8 +71,9 @@ def facebook_login():
 
     login_user(user)
     flash(
-        'Logged in as name=%s using Facebook login' % (
-            resp.json()['name']), 'success' )
+        f"Logged in as name={resp.json()['name']} using Facebook login",
+        'success',
+    )
     return redirect(request.args.get('next', url_for('auth.home')))
 
 
@@ -93,9 +91,7 @@ def google_login():
         db.session.commit()
 
     login_user(user)
-    flash(
-        'Logged in as name=%s using Google login' % (
-            resp.json()['name']), 'success' )
+    flash(f"Logged in as name={resp.json()['name']} using Google login", 'success')
     return redirect(request.args.get('next', url_for('auth.home')))
 
 
@@ -114,8 +110,9 @@ def twitter_login():
 
     login_user(user)
     flash(
-        'Logged in as name=%s using Twitter login' % (
-            resp.json()['name']), 'success' )
+        f"Logged in as name={resp.json()['name']} using Twitter login",
+        'success',
+    )
     return redirect(request.args.get('next', url_for('auth.home')))
 
 
@@ -146,8 +143,9 @@ def register():
     if form.validate_on_submit():
         username = request.form.get('username')
         password = request.form.get('password')
-        existing_username = User.query.filter_by(username=username).first()
-        if existing_username:
+        if existing_username := User.query.filter_by(
+            username=username
+        ).first():
             flash(
                 'This username has been already taken. Try another one.',
                 'warning'

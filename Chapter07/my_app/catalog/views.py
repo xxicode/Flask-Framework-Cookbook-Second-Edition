@@ -64,19 +64,19 @@ def products(page=1):
 
 @catalog.route('/product-create', methods=['GET', 'POST'])
 def create_product():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        price = request.form.get('price')
-        categ_name = request.form.get('category')
-        category = Category.query.filter_by(name=categ_name).first()
-        if not category:
-            category = Category(categ_name)
-        product = Product(name, price, category)
-        db.session.add(product)
-        db.session.commit()
-        flash('The product %s has been created' % name, 'success')
-        return redirect(url_for('catalog.product', id=product.id))
-    return render_template('product-create.html')
+    if request.method != 'POST':
+        return render_template('product-create.html')
+    name = request.form.get('name')
+    price = request.form.get('price')
+    categ_name = request.form.get('category')
+    category = Category.query.filter_by(name=categ_name).first()
+    if not category:
+        category = Category(categ_name)
+    product = Product(name, price, category)
+    db.session.add(product)
+    db.session.commit()
+    flash(f'The product {name} has been created', 'success')
+    return redirect(url_for('catalog.product', id=product.id))
 
 
 @catalog.route('/product-search')
@@ -88,14 +88,14 @@ def product_search(page=1):
     category = request.args.get('category')
     products = Product.query
     if name:
-        products = products.filter(Product.name.like('%' + name + '%'))
+        products = products.filter(Product.name.like(f'%{name}%'))
     if price:
         products = products.filter(Product.price == price)
     if company:
-        products = products.filter(Product.company.like('%' + company + '%'))
+        products = products.filter(Product.company.like(f'%{company}%'))
     if category:
         products = products.select_from(join(Product, Category)).filter(
-            Category.name.like('%' + category + '%')
+            Category.name.like(f'%{category}%')
         )
     return render_template(
         'products.html', products=products.paginate(page, 10)
@@ -132,13 +132,14 @@ class ProductApi(Resource):
             products = [Product.query.get(id)]
         if not products:
             abort(404)
-        res = {}
-        for product in products:
-            res[product.id] = {
+        res = {
+            product.id: {
                 'name': product.name,
                 'price': product.price,
-                'category': product.category.name
+                'category': product.category.name,
             }
+            for product in products
+        }
         return json.dumps(res)
 
     def post(self):
@@ -152,11 +153,12 @@ class ProductApi(Resource):
         product = Product(name, price, category)
         db.session.add(product)
         db.session.commit()
-        res = {}
-        res[product.id] = {
-            'name': product.name,
-            'price': product.price,
-            'category': product.category.name,
+        res = {
+            product.id: {
+                'name': product.name,
+                'price': product.price,
+                'category': product.category.name,
+            }
         }
         return json.dumps(res)
 
@@ -173,11 +175,12 @@ class ProductApi(Resource):
         })
         db.session.commit()
         product = Product.query.get_or_404(id)
-        res = {}
-        res[product.id] = {
-            'name': product.name,
-            'price': product.price,
-            'category': product.category.name,
+        res = {
+            product.id: {
+                'name': product.name,
+                'price': product.price,
+                'category': product.category.name,
+            }
         }
         return json.dumps(res)
 

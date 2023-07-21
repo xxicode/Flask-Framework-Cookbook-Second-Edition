@@ -19,9 +19,8 @@ auth = Blueprint('auth', __name__)
 def admin_login_required(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        if not current_user.is_admin():
-            return abort(403)
-        return func(*args, **kwargs)
+        return abort(403) if not current_user.is_admin() else func(*args, **kwargs)
+
     return decorated_view
 
 
@@ -52,8 +51,9 @@ def register():
     if form.validate_on_submit():
         username = request.form.get('username')
         password = request.form.get('password')
-        existing_username = User.query.filter_by(username=username).first()
-        if existing_username:
+        if existing_username := User.query.filter_by(
+            username=username
+        ).first():
             flash(
                 'This username has been already taken. Try another one.',
                 'warning'
@@ -130,8 +130,9 @@ def user_create_admin():
         username = form.username.data
         password = form.password.data
         admin = form.admin.data
-        existing_username = User.query.filter_by(username=username).first()
-        if existing_username:
+        if existing_username := User.query.filter_by(
+            username=username
+        ).first():
             flash(
                 'This username has been already taken. Try another one.',
                 'warning'

@@ -19,7 +19,7 @@ class CatalogTestCase(unittest.TestCase):
 
     def setUp(self):
         self.test_db_file = tempfile.mkstemp()[1]
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + self.test_db_file
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self.test_db_file}'
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         self.app = app.test_client()
